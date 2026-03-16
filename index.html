@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MostPlay Games - Vercel Test</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: #1e1e1e; border-radius: 10px; padding: 10px; border: 1px solid #333; }
+        img { width: 100%; border-radius: 8px; }
+        .name { font-size: 12px; margin-top: 8px; color: #ffcc00; }
+        #loader { margin-top: 50px; font-size: 18px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <h1>Featured Games</h1>
+    <div id="loader">Loading from Vercel Serverless...</div>
+    <div id="game-container" class="grid"></div>
+
+    <script>
+        async function loadGames() {
+            try {
+                // Hum direct MostPlay ko nahi, apne Vercel function ko call kar rahe hain
+                const response = await fetch('/api/get-games');
+                const result = await response.json();
+
+                if (result.status === "000000") {
+                    document.getElementById('loader').style.display = 'none';
+                    const games = result.data.featuredGameList[0].featuredGames;
+                    const container = document.getElementById('game-container');
+
+                    games.forEach(game => {
+                        container.innerHTML += `
+                            <div class="card">
+                                <img src="${game.iconPath}" alt="${game.gameName}">
+                                <div class="name">${game.gameName}</div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                document.getElementById('loader').innerHTML = "Error: " + err.message;
+            }
+        }
+        loadGames();
+    </script>
+</body>
+</html>
